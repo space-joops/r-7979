@@ -133,38 +133,9 @@ export function RaceDayNotify({ onDismiss }: { onDismiss: () => void }) {
     if (permission === "granted") void setupNotifications(false);
   }, [permission]);
 
-  // 오늘이 경마일이면 배너 (iOS 포함 전 플랫폼 — 예약 알림의 대체 수단)
-  if (racing && !sessionFlags.get("raceday_banner_dismissed")) {
-    return (
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/10 bg-background p-4">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
-          <p className="text-sm">
-            🏇 오늘은 <strong>{racing.tracks.join("·")}</strong> 경마일입니다
-          </p>
-          <div className="flex shrink-0 gap-2">
-            <Link
-              href="/racecard"
-              className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-background"
-            >
-              출마표 보기
-            </Link>
-            <button
-              type="button"
-              aria-label="닫기"
-              onClick={() => {
-                sessionFlags.set("raceday_banner_dismissed");
-                onDismiss();
-              }}
-              className="px-2 text-foreground/50"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  // 알림 옵트인이 자격을 얻었으면 경마일 배너보다 우선한다 —
+  // 배너를 먼저 보여주면 닫는 순간 옵트인 기회가 사라지는 문제가 있었음.
+  // (경마일 = 방문이 가장 많은 날 = 옵트인 전환이 가장 잘 되는 날)
   if (showOptIn) {
     return (
       <div
@@ -194,6 +165,38 @@ export function RaceDayNotify({ onDismiss }: { onDismiss: () => void }) {
         >
           다음에 할게요
         </button>
+      </div>
+    );
+  }
+
+  // 오늘이 경마일이면 배너 (iOS 포함 전 플랫폼 — 예약 알림의 대체 수단)
+  if (racing && !sessionFlags.get("raceday_banner_dismissed")) {
+    return (
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/10 bg-background p-4">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
+          <p className="text-sm">
+            🏇 오늘은 <strong>{racing.tracks.join("·")}</strong> 경마일입니다
+          </p>
+          <div className="flex shrink-0 gap-2">
+            <Link
+              href="/racecard"
+              className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-background"
+            >
+              출마표 보기
+            </Link>
+            <button
+              type="button"
+              aria-label="닫기"
+              onClick={() => {
+                sessionFlags.set("raceday_banner_dismissed");
+                onDismiss();
+              }}
+              className="px-2 text-foreground/50"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
