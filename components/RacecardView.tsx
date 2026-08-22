@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DateNav } from "@/components/DateNav";
+import { RaceJumpNav } from "@/components/RaceJumpNav";
 import { RacecardTable } from "@/components/RacecardTable";
 import { TrackTabs } from "@/components/TrackTabs";
 import { getRacecard } from "@/lib/kra/racecard";
@@ -35,7 +36,13 @@ export async function RacecardView({
           </span>
         </p>
       ) : (
-        <div className="mt-8 space-y-10">
+        <>
+          <div className="mt-5">
+            <RaceJumpNav
+              races={races.map((r) => ({ raceNo: r.raceNo, time: r.startTime }))}
+            />
+          </div>
+          <div className="mt-6 space-y-10">
           {races.map((race) => (
             <section key={race.raceNo} id={`race-${race.raceNo}`}>
               <RacecardTable race={race} trackName={track.nameKo} />
@@ -49,7 +56,8 @@ export async function RacecardView({
               </p>
             </section>
           ))}
-        </div>
+          </div>
+        </>
       )}
 
       <p className="mt-10 flex flex-wrap gap-4 text-sm text-foreground/60">

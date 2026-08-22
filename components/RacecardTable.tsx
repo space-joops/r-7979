@@ -32,7 +32,7 @@ function NameLink({
 export function RacecardTable({ race, trackName }: { race: RaceGroup; trackName: string }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] border-collapse text-sm">
+      <table className="w-full min-w-[480px] border-collapse text-sm">
         <caption className="mb-2 text-left font-semibold">
           {trackName} 제{race.raceNo}경주 {race.raceName}
           {race.startTime && (
@@ -46,11 +46,11 @@ export function RacecardTable({ race, trackName }: { race: RaceGroup; trackName:
             <th scope="col" className="px-2 py-1.5">번호</th>
             <th scope="col" className="px-2 py-1.5">마명</th>
             <th scope="col" className="px-2 py-1.5">성별/마령</th>
-            <th scope="col" className="px-2 py-1.5">산지</th>
+            <th scope="col" className="hidden px-2 py-1.5 md:table-cell">산지</th>
             <th scope="col" className="px-2 py-1.5 text-right">부담중량</th>
-            <th scope="col" className="px-2 py-1.5 text-right">레이팅</th>
+            <th scope="col" className="hidden px-2 py-1.5 text-right md:table-cell">레이팅</th>
             <th scope="col" className="px-2 py-1.5">기수</th>
-            <th scope="col" className="px-2 py-1.5">조교사</th>
+            <th scope="col" className="hidden px-2 py-1.5 md:table-cell">조교사</th>
           </tr>
         </thead>
         <tbody>
@@ -68,15 +68,15 @@ export function RacecardTable({ race, trackName }: { race: RaceGroup; trackName:
                   .filter(Boolean)
                   .join(" ")}
               </td>
-              <td className="px-2 py-1.5">{clean(entry.prdsNm)}</td>
+              <td className="hidden px-2 py-1.5 md:table-cell">{clean(entry.prdsNm)}</td>
               <td className="px-2 py-1.5 text-right">
                 {entry.burdWgt ? `${entry.burdWgt}kg` : "-"}
               </td>
-              <td className="px-2 py-1.5 text-right">{clean(entry.rating)}</td>
+              <td className="hidden px-2 py-1.5 text-right md:table-cell">{clean(entry.rating)}</td>
               <td className="px-2 py-1.5">
                 <NameLink value={entry.jckyNm} base="jockeys" />
               </td>
-              <td className="px-2 py-1.5">{clean(entry.trarNm)}</td>
+              <td className="hidden px-2 py-1.5 md:table-cell">{clean(entry.trarNm)}</td>
             </tr>
           ))}
         </tbody>

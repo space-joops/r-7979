@@ -3,13 +3,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --accent: #166534; /* 잔디 주로 그린 */
+  --accent: #166534; /* KRA 그린 */
+  --sand: #a07c3e; /* 모래 주로 — 한국 경마장은 전부 모래 주로 */
+  --sand-soft: #f3ecdd;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
+  --color-sand: var(--sand);
+  --color-sand-soft: var(--sand-soft);
   --font-sans: var(--font-noto-sans-kr);
 }
 
@@ -18,6 +22,8 @@
     --background: #0a0a0a;
     --foreground: #ededed;
     --accent: #4ade80;
+    --sand: #c8a96a;
+    --sand-soft: #2a2419;
   }
 }
 
@@ -26,4 +32,21 @@ body {
   color: var(--foreground);
   font-family: var(--font-noto-sans-kr), system-ui, sans-serif;
   word-break: keep-all;
+}
+
+/* sticky 헤더 아래로 앵커가 가려지지 않도록 */
+[id^="race-"] {
+  scroll-margin-top: 4.5rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

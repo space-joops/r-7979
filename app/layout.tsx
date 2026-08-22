@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { FunnelProvider } from "@/components/funnel/FunnelProvider";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -46,7 +48,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className={`${notoSansKr.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
+        <SiteHeader />
         {children}
+        <SiteFooter />
         <FunnelProvider />
       </body>
       <GoogleAnalytics gaId="G-RH1GDZPS7S" />

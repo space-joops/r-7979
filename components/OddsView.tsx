@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DateNav } from "@/components/DateNav";
 import { DividendTable } from "@/components/DividendTable";
+import { RaceJumpNav } from "@/components/RaceJumpNav";
 import { TrackTabs } from "@/components/TrackTabs";
 import { getDividends } from "@/lib/kra/dividends";
 import type { Track } from "@/lib/kra/tracks";
@@ -41,13 +42,18 @@ export async function OddsView({
           </span>
         </p>
       ) : (
-        <div className="mt-8 space-y-10">
-          {races.map((race) => (
-            <section key={race.raceNo} id={`race-${race.raceNo}`}>
-              <DividendTable race={race} trackName={track.nameKo} />
-            </section>
-          ))}
-        </div>
+        <>
+          <div className="mt-5">
+            <RaceJumpNav races={races.map((r) => ({ raceNo: r.raceNo }))} />
+          </div>
+          <div className="mt-6 space-y-10">
+            {races.map((race) => (
+              <section key={race.raceNo} id={`race-${race.raceNo}`}>
+                <DividendTable race={race} trackName={track.nameKo} />
+              </section>
+            ))}
+          </div>
+        </>
       )}
 
       <p className="mt-10 flex flex-wrap gap-4 text-sm text-foreground/60">
