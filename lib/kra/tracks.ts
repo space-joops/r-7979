@@ -52,3 +52,8 @@ export function trackBySlug(slug: string): Track | undefined {
 export function trackByMeet(meet: number): Track | undefined {
   return TRACKS.find((t) => t.meet === meet);
 }
+
+/** 응답의 한글 트랙명("서울" 등)으로 조회 */
+export function trackByApiName(name: string): Track | undefined {
+  return TRACKS.find((t) => t.apiName === name);
+}

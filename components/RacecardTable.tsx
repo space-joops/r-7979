@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { RaceGroup } from "@/lib/kra/racecard";
 
 /** API 응답의 빈 값 변형(" ", "()", 0 등)을 "-"로 정리 */
@@ -5,6 +6,26 @@ function clean(value: string | number | undefined): string {
   const s = String(value ?? "").trim();
   if (!s || s === "()" || s === "0") return "-";
   return s;
+}
+
+/** 유효한 이름이면 전적 페이지 링크, 아니면 "-" */
+function NameLink({
+  value,
+  base,
+}: {
+  value: string | number | undefined;
+  base: "horses" | "jockeys";
+}) {
+  const name = clean(value);
+  if (name === "-") return <>-</>;
+  return (
+    <Link
+      href={`/${base}/${encodeURIComponent(name)}`}
+      className="hover:text-accent hover:underline"
+    >
+      {name}
+    </Link>
+  );
 }
 
 /** 출전표 테이블 — 시맨틱 마크업(caption/thead/th scope)으로 SEO·접근성 확보 */
@@ -39,7 +60,9 @@ export function RacecardTable({ race, trackName }: { race: RaceGroup; trackName:
               className="border-b border-foreground/10 hover:bg-foreground/5"
             >
               <td className="px-2 py-1.5 font-semibold">{String(entry.gtno)}</td>
-              <td className="px-2 py-1.5 font-medium">{entry.hrnm}</td>
+              <td className="px-2 py-1.5 font-medium">
+                <NameLink value={entry.hrnm} base="horses" />
+              </td>
               <td className="px-2 py-1.5">
                 {[entry.gndrNm, entry.hrsAg && `${entry.hrsAg}세`]
                   .filter(Boolean)
@@ -50,7 +73,9 @@ export function RacecardTable({ race, trackName }: { race: RaceGroup; trackName:
                 {entry.burdWgt ? `${entry.burdWgt}kg` : "-"}
               </td>
               <td className="px-2 py-1.5 text-right">{clean(entry.rating)}</td>
-              <td className="px-2 py-1.5">{clean(entry.jckyNm)}</td>
+              <td className="px-2 py-1.5">
+                <NameLink value={entry.jckyNm} base="jockeys" />
+              </td>
               <td className="px-2 py-1.5">{clean(entry.trarNm)}</td>
             </tr>
           ))}

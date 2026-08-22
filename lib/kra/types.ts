@@ -82,6 +82,77 @@ export interface RaceResultEntry {
   noraceFlag?: string | number;
 }
 
+/** API15_2 raceHorseResult_2 — 경주마 성적 (§5.14, 실관측. ServiceKey 대문자) */
+export interface HorseStat {
+  hrNo: string;
+  hrName: string;
+  meet?: string;
+  age?: string | number;
+  sex?: string;
+  /** YYYYMMDD 숫자 */
+  debut?: string | number;
+  /** 산지 */
+  name?: string;
+  rcCntT?: string | number;
+  rcCntY?: string | number;
+  ord1CntT?: string | number;
+  ord1CntY?: string | number;
+  ord2CntT?: string | number;
+  ord2CntY?: string | number;
+  winRateT?: string | number;
+  winRateY?: string | number;
+  qnlRateT?: string | number;
+  qnlRateY?: string | number;
+  chaksunT?: string | number;
+  chaksunY?: string | number;
+  recentRcDate?: string | number;
+  recentRcNo?: string | number;
+  recentRcName?: string;
+  recentRcDist?: string | number;
+  recentRcTime?: string | number;
+  recentOrd?: string | number;
+  recentRank?: string;
+  recentRating?: string | number;
+  recentBudam?: string;
+  recentWgHr?: string | number;
+  recentWgBudam?: string | number;
+}
+
+/** API145 rchrLoyRcod — 경주마 최근 1년 요약 (§5.3, 실관측) */
+export interface HorseYearSummary {
+  hrnm: string;
+  hrno: string;
+  rccrsNm?: string;
+  /** 1년 출주 수 */
+  loyPtinTcnt?: string | number;
+  loyFcmTcnt?: string | number;
+  loyScmTcnt?: string | number;
+  loyTcmTcnt?: string | number;
+  loyFocmTcnt?: string | number;
+  loyFvcmTcnt?: string | number;
+  /** 1년 순위상금 합계 */
+  loyPlcpmAmt?: string | number;
+  /** 최종 출주일 "2026.08.16" */
+  lstPtinDt?: string;
+}
+
+/** API11_1 jockeyResult_1 — 기수 성적 (§5.13, 실관측. ServiceKey 대문자) */
+export interface JockeyStat {
+  jkNo: string;
+  jkName: string;
+  meet?: string;
+  rcCntT?: string | number;
+  rcCntY?: string | number;
+  ord1CntT?: string | number;
+  ord1CntY?: string | number;
+  ord2CntT?: string | number;
+  ord2CntY?: string | number;
+  winRateT?: string | number;
+  winRateY?: string | number;
+  qnlRateT?: string | number;
+  qnlRateY?: string | number;
+}
+
 export type DividendPool =
   | "WIN"
   | "PLC"

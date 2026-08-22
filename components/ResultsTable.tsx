@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { formatOdds } from "@/lib/kra/dividends";
 import { formatStartTime, type ResultRaceGroup } from "@/lib/kra/results";
 import type { DividendRate } from "@/lib/kra/types";
@@ -6,6 +7,26 @@ function clean(value: string | number | undefined): string {
   const s = String(value ?? "").trim();
   if (!s || s === "0") return "-";
   return s;
+}
+
+/** 유효한 이름이면 전적 페이지 링크, 아니면 "-" */
+function NameLink({
+  value,
+  base,
+}: {
+  value: string | number | undefined;
+  base: "horses" | "jockeys";
+}) {
+  const name = clean(value);
+  if (name === "-") return <>-</>;
+  return (
+    <Link
+      href={`/${base}/${encodeURIComponent(name)}`}
+      className="hover:text-accent hover:underline"
+    >
+      {name}
+    </Link>
+  );
 }
 
 /** 경주결과 테이블 — 착순·기록·단승/연승 배당(WIN/PLC 조인) */
@@ -68,7 +89,9 @@ export function ResultsTable({
                   {canceled ? "제외" : `${ord}착`}
                 </td>
                 <td className="px-2 py-1.5">{chulNo}</td>
-                <td className="px-2 py-1.5 font-medium">{entry.hrName}</td>
+                <td className="px-2 py-1.5 font-medium">
+                  <NameLink value={entry.hrName} base="horses" />
+                </td>
                 <td className="px-2 py-1.5 text-right tabular-nums">
                   {canceled ? "-" : clean(entry.rcTime)}
                 </td>
@@ -79,7 +102,9 @@ export function ResultsTable({
                   {plc == null ? "-" : formatOdds(plc)}
                 </td>
                 <td className="px-2 py-1.5 text-right">{clean(entry.wgHr)}</td>
-                <td className="px-2 py-1.5">{clean(entry.jkName)}</td>
+                <td className="px-2 py-1.5">
+                  <NameLink value={entry.jkName} base="jockeys" />
+                </td>
                 <td className="px-2 py-1.5">{clean(entry.trName)}</td>
               </tr>
             );
