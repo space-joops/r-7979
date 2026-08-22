@@ -7,14 +7,19 @@ import { useEffect, useMemo, useState } from "react";
 import { track } from "@/lib/funnel/analytics";
 import {
   getEscapeStrategy,
+  type EscapeMethod,
   type InAppName,
   type Platform,
 } from "@/lib/funnel/env";
 
-const BROWSER_LABEL: Record<Platform, string> = {
-  ios: "Safari로 열기",
-  android: "Chrome으로 열기",
-  desktop: "브라우저에서 열기",
+// 실제로 열리는 대상에 맞춘 정직한 라벨:
+// 카카오톡/LINE은 "기본 브라우저"를 열므로(iOS에서 기본이 Chrome이면 Chrome이 열림)
+// 특정 브라우저 이름을 약속하지 않는다. intent/x-safari는 대상을 강제하므로 이름 명시.
+const METHOD_LABEL: Record<Exclude<EscapeMethod, "copy_url">, string> = {
+  kakao_external: "외부 브라우저로 열기",
+  line_param: "외부 브라우저로 열기",
+  android_intent: "Chrome으로 열기",
+  ios_safari_scheme: "Safari로 열기",
 };
 
 export function InAppBrowserGuard({
@@ -75,13 +80,13 @@ export function InAppBrowserGuard({
         없어요.
       </p>
 
-      {strategy.url && (
+      {strategy.url && strategy.method !== "copy_url" && (
         <button
           type="button"
           onClick={escape}
           className="mt-4 w-full rounded-lg bg-accent px-4 py-3 font-semibold text-background"
         >
-          {BROWSER_LABEL[platform]}
+          {METHOD_LABEL[strategy.method]}
         </button>
       )}
 

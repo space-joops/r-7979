@@ -4,9 +4,9 @@
 // Android: beforeinstallprompt 캡처 시 원탭 설치 버튼(문서는 비권장이지만 유일한 방법 —
 // 피처 디텍트로 폴백 병행). iOS: 공유 → 홈 화면에 추가 안내.
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { track } from "@/lib/funnel/analytics";
-import type { Platform } from "@/lib/funnel/env";
+import { detectIosBrowser, type Platform } from "@/lib/funnel/env";
 import { funnelStorage } from "@/lib/funnel/storage";
 import type { BipEvent } from "./FunnelProvider";
 
@@ -21,10 +21,14 @@ export function InstallPrompt({
 }) {
   const ui =
     platform === "ios" ? "ios_guide" : bip ? "android_button" : "android_manual";
+  // iOS는 브라우저마다 공유 버튼 위치가 다르다 (Safari 하단 / Chrome 우측 상단)
+  const [iosBrowser] = useState(() =>
+    platform === "ios" ? detectIosBrowser(navigator.userAgent) : null,
+  );
 
   useEffect(() => {
-    track("install_prompt_shown", { ui });
-  }, [ui]);
+    track("install_prompt_shown", { ui, browser: iosBrowser ?? "(n/a)" });
+  }, [ui, iosBrowser]);
 
   const install = async () => {
     if (!bip) return;
@@ -70,7 +74,17 @@ export function InstallPrompt({
       {ui === "ios_guide" && (
         <ol className="mt-4 space-y-2 rounded-lg bg-foreground/5 p-3 text-sm">
           <li>
-            1. 하단 <strong>공유 버튼(􀈂 ⬆︎)</strong>을 탭
+            1.{" "}
+            {iosBrowser === "chrome" ? (
+              <>
+                우측 상단 <strong>공유 버튼(⬆︎)</strong>을 탭
+              </>
+            ) : (
+              <>
+                {iosBrowser === "safari" ? "하단" : "브라우저 메뉴의"}{" "}
+                <strong>공유 버튼(⬆︎)</strong>을 탭
+              </>
+            )}
           </li>
           <li>
             2. <strong>홈 화면에 추가</strong>를 선택

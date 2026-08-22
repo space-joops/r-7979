@@ -43,6 +43,15 @@ export function detectPlatform(ua: string): Platform {
   return "desktop";
 }
 
+export type IosBrowser = "safari" | "chrome" | "other";
+
+/** iOS에서 실제 사용 중인 브라우저 구분 — 설치 안내 문구가 브라우저마다 다르다 */
+export function detectIosBrowser(ua: string): IosBrowser {
+  if (/CriOS/i.test(ua)) return "chrome";
+  if (/FxiOS|EdgiOS|OPiOS|whale/i.test(ua)) return "other";
+  return "safari";
+}
+
 export function isStandalone(): boolean {
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
