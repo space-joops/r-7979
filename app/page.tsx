@@ -1,69 +1,78 @@
-import Image from "next/image";
+import Link from "next/link";
+import { formatKo, todayKst } from "@/lib/kst";
+import { isRaceDay, nearestRaceDay, tracksRacingOn } from "@/lib/kra/schedule";
+import { TRACKS } from "@/lib/kra/tracks";
+import { SITE_NAME } from "@/lib/site";
+
+export const revalidate = 3600;
 
 export default function Home() {
+  const today = todayKst();
+  const racingToday = tracksRacingOn(today);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8">
+      <h1 className="text-2xl font-bold">{SITE_NAME}</h1>
+      <p className="mt-2 text-foreground/70">
+        서울·부산경남·제주 경마 출마표와 확정 배당률을 한눈에 확인하세요.
+      </p>
+
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold">
+          {racingToday.length > 0
+            ? `오늘(${formatKo(today)})은 경마일입니다 🏇`
+            : `오늘(${formatKo(today)})은 경마가 없는 날입니다`}
+        </h2>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+          {TRACKS.map((track) => {
+            const date = nearestRaceDay(track);
+            const isToday = isRaceDay(track, today);
+            return (
+              <li key={track.slug}>
+                <Link
+                  href={`/racecard/${track.slug}/${date}`}
+                  className="block rounded-lg border border-foreground/15 p-4 transition-colors hover:border-accent"
+                >
+                  <span className="block font-semibold">{track.nameKo}</span>
+                  <span className="mt-1 block text-sm text-foreground/60">
+                    {isToday ? "오늘 개최" : `다음 개최 ${formatKo(date)}`}
+                  </span>
+                  <span className="mt-2 block text-sm text-accent">
+                    출마표 보기 →
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold">바로가기</h2>
+        <nav aria-label="주요 메뉴" className="mt-3 flex flex-wrap gap-3">
+          <Link
+            href="/racecard"
+            className="rounded-lg bg-foreground/5 px-4 py-2 font-medium hover:bg-foreground/10"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            출마표
+          </Link>
+          <Link
+            href="/odds"
+            className="rounded-lg bg-foreground/5 px-4 py-2 font-medium hover:bg-foreground/10"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            확정 배당률
+          </Link>
+        </nav>
+      </section>
+
+      <section className="mt-10 text-sm text-foreground/60">
+        <h2 className="font-semibold text-foreground/80">경마 개최 안내</h2>
+        <ul className="mt-2 space-y-1">
+          <li>서울(렛츠런파크 서울, 과천): 매주 토·일</li>
+          <li>부산경남(렛츠런파크 부산경남): 매주 금·일</li>
+          <li>제주(렛츠런파크 제주): 매주 금·토</li>
+        </ul>
+      </section>
+    </main>
   );
 }
