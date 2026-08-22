@@ -57,6 +57,12 @@ export default function Home() {
             출마표
           </Link>
           <Link
+            href="/results"
+            className="rounded-lg bg-foreground/5 px-4 py-2 font-medium hover:bg-foreground/10"
+          >
+            경주결과
+          </Link>
+          <Link
             href="/odds"
             className="rounded-lg bg-foreground/5 px-4 py-2 font-medium hover:bg-foreground/10"
           >

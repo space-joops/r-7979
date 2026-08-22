@@ -52,15 +52,19 @@ export async function RacecardView({
         </div>
       )}
 
-      <p className="mt-10 text-sm text-foreground/60">
-        확정 배당률은{" "}
+      <p className="mt-10 flex flex-wrap gap-4 text-sm text-foreground/60">
+        <Link
+          href={`/results/${track.slug}/${date}`}
+          className="text-accent hover:underline"
+        >
+          이날 경주결과 보기
+        </Link>
         <Link
           href={`/odds/${track.slug}/${date}`}
           className="text-accent hover:underline"
         >
-          {track.nameKo} 확정 배당률
+          확정 배당률 보기
         </Link>
-        에서 확인할 수 있습니다.
       </p>
     </>
   );

@@ -53,6 +53,35 @@ export interface RacecardEntry {
   raceCnd3?: string;
 }
 
+/** API299 Race_Result_total — 경주결과 한 행(말 한 마리) (§5.2, 실관측 필드) */
+export interface RaceResultEntry {
+  /** 숫자 YYYYMMDD (API78과 달리 순수 숫자) */
+  rcDate: string | number;
+  rcNo: string | number;
+  /** 착순. 0이면 미완주/제외 */
+  ord: string | number;
+  chulNo: string | number;
+  hrNo?: string;
+  hrName: string;
+  age?: string | number;
+  sex?: string;
+  prdName?: string;
+  rank?: string;
+  /** 완주기록(초), 예: 74.7 */
+  rcTime?: string | number;
+  /** 마체중 "465(+7)" 형태 문자열 */
+  wgHr?: string;
+  wgBudam?: string | number;
+  jkName?: string;
+  trName?: string;
+  /** ISO 형식 "2026-08-16T10:35:00+09:00" */
+  schStTime?: string;
+  /** 주로 상태 "다습 (13%)" */
+  track?: string;
+  /** 0이 아니면 경주 취소 등 */
+  noraceFlag?: string | number;
+}
+
 export type DividendPool =
   | "WIN"
   | "PLC"

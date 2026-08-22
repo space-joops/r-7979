@@ -50,15 +50,19 @@ export async function OddsView({
         </div>
       )}
 
-      <p className="mt-10 text-sm text-foreground/60">
-        출전마 정보는{" "}
+      <p className="mt-10 flex flex-wrap gap-4 text-sm text-foreground/60">
         <Link
           href={`/racecard/${track.slug}/${date}`}
           className="text-accent hover:underline"
         >
-          {track.nameKo} 출마표
+          이날 출마표 보기
         </Link>
-        에서 확인할 수 있습니다.
+        <Link
+          href={`/results/${track.slug}/${date}`}
+          className="text-accent hover:underline"
+        >
+          경주결과 보기
+        </Link>
       </p>
     </>
   );

@@ -14,9 +14,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const statics: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/racecard`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/results`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${SITE_URL}/odds`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     ...TRACKS.flatMap((t) => [
       { url: `${SITE_URL}/racecard/${t.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.9 },
+      { url: `${SITE_URL}/results/${t.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.9 },
       { url: `${SITE_URL}/odds/${t.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.8 },
     ]),
   ];
@@ -38,6 +40,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
           changeFrequency: past ? ("monthly" as const) : ("hourly" as const),
           priority: past ? 0.4 : 0.7,
         },
+        // 결과 페이지는 미래 날짜 URL을 만들지 않는다
+        ...(date <= today
+          ? [
+              {
+                url: `${SITE_URL}/results/${track.slug}/${date}`,
+                lastModified,
+                changeFrequency: past ? ("monthly" as const) : ("hourly" as const),
+                priority: past ? 0.5 : 0.8,
+              },
+            ]
+          : []),
       ];
     }),
   );
