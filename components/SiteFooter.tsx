@@ -9,6 +9,7 @@ export function SiteFooter() {
           <Link href="/racecard" className="hover:text-foreground">출마표</Link>
           <Link href="/results" className="hover:text-foreground">경주결과</Link>
           <Link href="/odds" className="hover:text-foreground">확정 배당률</Link>
+          <Link href="/predict" className="hover:text-foreground">예측</Link>
         </nav>
         <div className="space-y-1">
           <p>경마 개최: 서울 토·일 / 부산경남 금·일 / 제주 금·토 (명절 주간 등은 변동될 수 있습니다)</p>

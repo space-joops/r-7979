@@ -62,6 +62,12 @@ export async function RacecardView({
 
       <p className="mt-10 flex flex-wrap gap-4 text-sm text-foreground/60">
         <Link
+          href={`/predict/${track.slug}/${date}`}
+          className="text-accent hover:underline"
+        >
+          이날 예상 보기
+        </Link>
+        <Link
           href={`/results/${track.slug}/${date}`}
           className="text-accent hover:underline"
         >

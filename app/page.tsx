@@ -47,6 +47,12 @@ export default function Home() {
                 </Link>
               ))}
               <Link
+                href="/predict"
+                className="rounded-lg border border-sand px-4 py-2 font-medium text-sand hover:bg-sand-soft"
+              >
+                오늘의 예상
+              </Link>
+              <Link
                 href="/results"
                 className="rounded-lg border border-foreground/20 px-4 py-2 font-medium hover:border-accent"
               >

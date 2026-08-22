@@ -16,10 +16,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/racecard`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${SITE_URL}/results`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${SITE_URL}/odds`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/predict`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     ...TRACKS.flatMap((t) => [
       { url: `${SITE_URL}/racecard/${t.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.9 },
       { url: `${SITE_URL}/results/${t.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.9 },
       { url: `${SITE_URL}/odds/${t.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.8 },
+      { url: `${SITE_URL}/predict/${t.slug}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.9 },
     ]),
   ];
 

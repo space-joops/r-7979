@@ -5,6 +5,7 @@ const NAV = [
   { href: "/racecard", label: "출마표" },
   { href: "/results", label: "경주결과" },
   { href: "/odds", label: "배당률" },
+  { href: "/predict", label: "예측" },
 ] as const;
 
 /** 전역 헤더 — 검색으로 깊은 페이지에 착지한 사용자의 이동 경로 */
