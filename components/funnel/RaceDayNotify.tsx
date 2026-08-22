@@ -2,15 +2,43 @@
 
 // 경마일 알림 — 설치된(standalone) 앱 전용.
 // 1) 오늘이 경마일이면 인앱 배너 표시 (모든 플랫폼 — iOS 포함)
-// 2) Android: Periodic Background Sync 등록으로 경마일 아침 로컬 알림 시도.
-//    발화 시점은 브라우저 재량(참여도 기반)이며 iOS는 웹 표준상 예약 로컬 알림이
-//    불가능하다 — 정확한 시간 보장이 필요해지면 서버 Web Push(Phase 3)로 업그레이드.
+// 2) 알림 허용 시 서버 Web Push 구독 (크론이 경마일 아침 KST 07시 발송 — iOS 16.4+ 포함)
+// 3) Android는 Periodic Background Sync도 병행 등록 (같은 tag라 중복 알림 없음, 폴백)
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { subscribeUser } from "@/app/actions";
 import { track } from "@/lib/funnel/analytics";
 import { todaysRacing } from "@/lib/funnel/race-days";
 import { funnelStorage, sessionFlags } from "@/lib/funnel/storage";
+
+function urlBase64ToUint8Array(base64: string): Uint8Array {
+  const padding = "=".repeat((4 - (base64.length % 4)) % 4);
+  const raw = atob((base64 + padding).replace(/-/g, "+").replace(/_/g, "/"));
+  return Uint8Array.from(raw, (c) => c.charCodeAt(0));
+}
+
+/** 서버 Web Push 구독 → Redis 저장. 성공 여부 반환 */
+async function subscribeWebPush(
+  registration: ServiceWorkerRegistration,
+): Promise<boolean> {
+  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  if (!vapidKey || !("pushManager" in registration)) return false;
+  try {
+    const subscription =
+      (await registration.pushManager.getSubscription()) ??
+      (await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidKey) as BufferSource,
+      }));
+    const { ok } = await subscribeUser(
+      JSON.parse(JSON.stringify(subscription)),
+    );
+    return ok;
+  } catch {
+    return false;
+  }
+}
 
 type PermissionState = "default" | "granted" | "denied";
 
@@ -21,12 +49,10 @@ interface PeriodicSyncRegistration extends ServiceWorkerRegistration {
   };
 }
 
-async function registerPeriodicSync(): Promise<boolean> {
+async function registerPeriodicSync(
+  registration: PeriodicSyncRegistration,
+): Promise<boolean> {
   try {
-    const registration = (await navigator.serviceWorker.register("/sw.js", {
-      scope: "/",
-      updateViaCache: "none",
-    })) as PeriodicSyncRegistration;
     if (!registration.periodicSync) return false;
     const status = await navigator.permissions.query({
       // 타입 정의에 없는 최신 권한명
@@ -39,6 +65,25 @@ async function registerPeriodicSync(): Promise<boolean> {
     return true;
   } catch {
     return false;
+  }
+}
+
+/** SW 등록 후 Web Push 구독 + PBS 폴백 등록. GA 이벤트 발화 포함 */
+async function setupNotifications(emitEvents: boolean): Promise<void> {
+  if (!("serviceWorker" in navigator)) return;
+  try {
+    const registration = (await navigator.serviceWorker.register("/sw.js", {
+      scope: "/",
+      updateViaCache: "none",
+    })) as PeriodicSyncRegistration;
+    const pushed = await subscribeWebPush(registration);
+    if (emitEvents) {
+      track(pushed ? "push_subscribed" : "push_subscribe_failed");
+    }
+    const pbs = await registerPeriodicSync(registration);
+    if (emitEvents && pbs) track("periodicsync_registered");
+  } catch {
+    if (emitEvents) track("push_subscribe_failed", { error_code: "sw_register" });
   }
 }
 
@@ -76,17 +121,16 @@ export function RaceDayNotify({ onDismiss }: { onDismiss: () => void }) {
     funnelStorage.set("notify_status", result);
     if (result === "granted") {
       track("notify_permission_granted");
-      const registered = await registerPeriodicSync();
-      if (registered) track("periodicsync_registered");
+      await setupNotifications(true);
     } else if (result === "denied") {
       track("notify_permission_denied");
     }
     setShowOptIn(false);
   };
 
-  // 이미 허용된 상태면 조용히 periodic sync 재등록 (설치 직후 1회성 등록 유실 대비)
+  // 이미 허용된 상태면 조용히 구독 상태 복구 (구독 만료/유실 대비, 이벤트 미발화)
   useEffect(() => {
-    if (permission === "granted") void registerPeriodicSync();
+    if (permission === "granted") void setupNotifications(false);
   }, [permission]);
 
   // 오늘이 경마일이면 배너 (iOS 포함 전 플랫폼 — 예약 알림의 대체 수단)

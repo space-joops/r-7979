@@ -37,6 +37,27 @@ self.addEventListener("periodicsync", (event) => {
   event.waitUntil(maybeNotifyRaceDay());
 });
 
+// 서버 Web Push — 크론(KST 07시)이 보내는 경마일 알림.
+// PBS 로컬 알림과 같은 tag를 쓰므로 둘 다 발화해도 하나로 합쳐진다.
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+  let data;
+  try {
+    data = event.data.json();
+  } catch {
+    return;
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || "오늘의 경마", {
+      body: data.body || "",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      tag: data.tag || "race_day",
+      data: { url: data.url || "/" },
+    }),
+  );
+});
+
 async function maybeNotifyRaceDay() {
   const { weekday, ymd } = kstToday();
   const tracks = RACE_DAY_TRACKS[weekday];
